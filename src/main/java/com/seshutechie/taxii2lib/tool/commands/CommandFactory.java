@@ -11,6 +11,7 @@ public class CommandFactory {
         commandsMap.put(ExitCommand.NAME, new ExitCommand(null));
         commandsMap.put(SetCommand.NAME, new SetCommand(null));
         commandsMap.put(DiscoveryCommand.NAME, new DiscoveryCommand(null));
+        commandsMap.put(CollectionsCommand.NAME, new CollectionsCommand());
         commandsMap.put(HelpCommand.NAME, new HelpCommand(null, commandsMap));
     }
 

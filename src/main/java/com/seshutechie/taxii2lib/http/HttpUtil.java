@@ -19,7 +19,7 @@ public class HttpUtil {
     public static String doDiscovery(String url, String user, String password) throws TaxiiAppException {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
-        updateDiscoveryHeaders(httpGet, user, password);
+        updateCommonHeaders(httpGet, user, password);
         String result = null;
 
         try {
@@ -34,7 +34,7 @@ public class HttpUtil {
         return result;
     }
 
-    public static void updateDiscoveryHeaders(HttpGet httpGet, String user, String password) {
+    public static void updateCommonHeaders(HttpGet httpGet, String user, String password) {
         httpGet.setHeader(HttpHeaders.ACCEPT, StixConstants.HTTP_ACCEPT_VALUE);
         httpGet.setHeader(HttpHeaders.AUTHORIZATION, getAuthorizationString(user, password));
         httpGet.setHeader(StixConstants.HTTP_HEADER_VERSION, StixConstants.SITX_VERSION);
@@ -42,5 +42,23 @@ public class HttpUtil {
 
     private static String getAuthorizationString(String user, String password) {
         return AUTH_BASIC + EncodeUtil.base64Encode(user + ":" + password);
+    }
+
+    public static String getCollections(String apiRoot, String user, String password) throws TaxiiAppException {
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpGet httpGet = new HttpGet(apiRoot + StixConstants.SUFFIX_COLLECTIONS);
+        updateCommonHeaders(httpGet, user, password);
+        String result = null;
+
+        try {
+            CloseableHttpResponse response = httpclient.execute(httpGet);
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                result = EntityUtils.toString(entity);
+            }
+        } catch (IOException e) {
+            throw new TaxiiAppException(e);
+        }
+        return result;
     }
 }

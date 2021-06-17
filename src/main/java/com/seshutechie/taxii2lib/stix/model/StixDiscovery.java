@@ -8,7 +8,8 @@ public class StixDiscovery {
     private String contact;
     @SerializedName("default")
     private String defaultApiRoot;
-    private String[] api_roots;
+    @SerializedName("api_roots")
+    private String[] apiRoots;
 
     public String getTitle() {
         return title;
@@ -34,19 +35,19 @@ public class StixDiscovery {
         this.contact = contact;
     }
 
-    public String[] getApi_roots() {
-        return api_roots;
-    }
-
-    public void setApi_roots(String[] api_roots) {
-        this.api_roots = api_roots;
-    }
-
     public String getDefaultApiRoot() {
         return defaultApiRoot;
     }
 
     public void setDefaultApiRoot(String defaultApiRoot) {
         this.defaultApiRoot = defaultApiRoot;
+    }
+
+    public String[] getApiRoots() {
+        return apiRoots;
+    }
+
+    public void setApiRoots(String[] apiRoots) {
+        this.apiRoots = apiRoots;
     }
 }

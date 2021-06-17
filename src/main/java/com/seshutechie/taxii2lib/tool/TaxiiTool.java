@@ -12,18 +12,19 @@ public class TaxiiTool {
     private static final TaxiiLib taxiiLib = new TaxiiLib();
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        try {
+        try (Scanner scanner = new Scanner(System.in)) {
             TaxiiContext context = TaxiiContext.getContext();
             context.setTaxiiLib(taxiiLib);
 
             while (true) {
-                showPrompt();
-                String line = scanner.nextLine();
-                processCommandLine(line);
+                try {
+                    showPrompt();
+                    String line = scanner.nextLine();
+                    processCommandLine(line);
+                } catch (Exception ex) {
+                    System.out.printf("Unable to handle. Got Error: %s", ex.getMessage());
+                }
             }
-        } finally {
-            scanner.close();
         }
     }
 
