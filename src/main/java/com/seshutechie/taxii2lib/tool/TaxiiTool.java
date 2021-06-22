@@ -9,12 +9,10 @@ import java.util.Scanner;
 
 public class TaxiiTool {
     private static final Object TAXII_PROMPT = "TAXII-2>";
-    private static final TaxiiLib taxiiLib = new TaxiiLib();
 
     public static void main(String[] args) {
         try (Scanner scanner = new Scanner(System.in)) {
-            TaxiiContext context = TaxiiContext.getContext();
-            context.setTaxiiLib(taxiiLib);
+            StartupHandler.setDefaultContext();
 
             while (true) {
                 try {

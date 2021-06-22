@@ -66,7 +66,11 @@ public class ParsedCommand {
     }
 
     public int getArgumentCount() {
-        return arguments.size() + argMap.size();
+        return arguments.size();
+    }
+
+    public int getAdditionalArgumentCount() {
+        return argMap.size();
     }
 
     public String getArgument(int index) {

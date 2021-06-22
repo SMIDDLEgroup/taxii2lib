@@ -13,6 +13,8 @@ public class CommandFactory {
         commandsMap.put(DiscoveryCommand.NAME, new DiscoveryCommand(null));
         commandsMap.put(CollectionsCommand.NAME, new CollectionsCommand());
         commandsMap.put(HelpCommand.NAME, new HelpCommand(null, commandsMap));
+        commandsMap.put(ShowCommand.NAME, new ShowCommand());
+        commandsMap.put(CollectionDetailsCommand.NAME, new CollectionDetailsCommand());
     }
 
     public static Command createCommand(String line) {

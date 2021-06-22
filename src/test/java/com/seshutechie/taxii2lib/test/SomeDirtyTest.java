@@ -13,7 +13,17 @@ public class SomeDirtyTest {
     public static void main(String[] args) throws Exception {
 //        testHttpDiscovery();
 //        testTaxiiDiscovery();
-        testGetCollections();
+//        testGetCollections();
+        testCollectionDetails();
+    }
+
+    private static void testCollectionDetails() throws TaxiiAppException {
+        TaxiiLib taxiiLib = new TaxiiLib();
+        taxiiLib.setBasicAuthorization("guest", "guest");
+        StixCollection collection = taxiiLib.getCollectionDetailsObject("https://cti-taxii.mitre.org/stix/", "2f669986-b40b-4423-b720-4396ca6a462b");
+        String json = JsonUtil.objectToJson(collection);
+        System.out.println(json);
+        System.out.println(JsonUtil.prettyJson(json));
     }
 
     private static void testGetCollections() throws TaxiiAppException {

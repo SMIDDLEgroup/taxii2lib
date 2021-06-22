@@ -19,8 +19,8 @@ public class CollectionsCommand extends Command {
     @Override
     public void execute() throws TaxiiAppException {
         if(parsedCommand.getArgumentCount() == 1) {
-            String discovery = context.getTaxiiLib().getCollections(parsedCommand.getArgument(0));
-            System.out.println(JsonUtil.prettyJson(discovery));
+            String collections = context.getTaxiiLib().getCollections(parsedCommand.getArgument(0));
+            System.out.println(JsonUtil.prettyJson(collections));
         } else {
             System.out.printf("Invalid arguments: %s.\nUsage: %s\n",
                     this.parsedCommand.getLine(), getUsage());

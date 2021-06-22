@@ -74,4 +74,29 @@ public class TaxiiLib {
         StixCollectionResp collectionResp = (StixCollectionResp) JsonUtil.jsonToObject(collections, StixCollectionResp.class);
         return collectionResp.getCollections();
     }
+
+    /**
+     * Find the collection details from a given STIX API root, and return as a raw string
+     *
+     * @param apiRoot API Root URL to get collections list (ex: https://cti-taxii.mitre.org/stix/)
+     * @param collectionId collection id
+     * @return a raw string of collection details
+     * @throws TaxiiAppException error condition is raised as TaxiiAppException
+     */
+    public String getCollectionDetails(String apiRoot, String collectionId) throws TaxiiAppException {
+        return HttpUtil.getCollectionDetails(apiRoot, collectionId, user, password);
+    }
+
+    /**
+     * Find the collection details from a given STIX API root, and return as an object
+     *
+     * @param apiRoot API Root URL to get collections list (ex: https://cti-taxii.mitre.org/stix/)
+     * @param collectionId collection id
+     * @return a raw string of collection details
+     * @throws TaxiiAppException error condition is raised as TaxiiAppException
+     */
+    public StixCollection getCollectionDetailsObject(String apiRoot, String collectionId) throws TaxiiAppException {
+        String collection = HttpUtil.getCollectionDetails(apiRoot, collectionId, user, password);
+        return (StixCollection) JsonUtil.jsonToObject(collection, StixCollection.class);
+    }
 }

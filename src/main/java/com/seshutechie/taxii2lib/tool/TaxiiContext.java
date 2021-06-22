@@ -2,8 +2,10 @@ package com.seshutechie.taxii2lib.tool;
 
 import com.seshutechie.taxii2lib.TaxiiLib;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class TaxiiContext {
     private static volatile TaxiiContext context = null;
@@ -40,5 +42,13 @@ public class TaxiiContext {
 
     public void setTaxiiLib(TaxiiLib taxiiLib) {
         this.taxiiLib = taxiiLib;
+    }
+
+    public Set<String> getKeys() {
+        return Collections.unmodifiableSet(contextMap.keySet());
+    }
+
+    public boolean hasValue(String name) {
+        return contextMap.containsKey(name);
     }
 }
