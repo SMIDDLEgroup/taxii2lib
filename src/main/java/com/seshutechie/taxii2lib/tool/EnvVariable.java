@@ -4,7 +4,9 @@ public enum EnvVariable {
     USER("user"),
     PASSWORD("password"),
     PAGE_SIZE("page-size"),
-    API_ROOT("api-root");
+    FROM("from"),
+    API_ROOT("api-root"),
+    COLLECTION_ID("collection-id");
 
     public String name;
 

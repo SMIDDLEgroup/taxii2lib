@@ -15,6 +15,8 @@ public class CommandFactory {
         commandsMap.put(HelpCommand.NAME, new HelpCommand(null, commandsMap));
         commandsMap.put(ShowCommand.NAME, new ShowCommand());
         commandsMap.put(CollectionDetailsCommand.NAME, new CollectionDetailsCommand());
+        commandsMap.put(ObjectsCommand.NAME, new ObjectsCommand());
+        commandsMap.put(NextObjectsCommand.NAME, new NextObjectsCommand());
     }
 
     public static Command createCommand(String line) {

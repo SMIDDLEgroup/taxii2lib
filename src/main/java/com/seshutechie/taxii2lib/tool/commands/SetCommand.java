@@ -1,5 +1,6 @@
 package com.seshutechie.taxii2lib.tool.commands;
 
+import com.seshutechie.taxii2lib.TaxiiAppException;
 import com.seshutechie.taxii2lib.TaxiiLib;
 import com.seshutechie.taxii2lib.tool.ContextConstants;
 import com.seshutechie.taxii2lib.tool.EnvVariable;
@@ -15,7 +16,7 @@ public class SetCommand extends Command {
     }
 
     @Override
-    public void execute() {
+    public void execute() throws TaxiiAppException {
         if(parsedCommand.getArgumentCount() == 2) {
             String name = parsedCommand.getArgument(0);
             String value = parsedCommand.getArgument(1);
@@ -32,7 +33,12 @@ public class SetCommand extends Command {
                             taxiiLib.setBasicAuthorization(user.toString(), value);
                         }
                         break;
-
+                    case PAGE_SIZE:
+                        try {
+                            context.addValue(name, Integer.parseInt(value));
+                        } catch (NumberFormatException e) {
+                            throw new TaxiiAppException("Invalid page size: " + value);
+                        }
                 }
             }
 

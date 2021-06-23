@@ -5,6 +5,7 @@ import com.seshutechie.taxii2lib.TaxiiLib;
 import com.seshutechie.taxii2lib.http.HttpUtil;
 import com.seshutechie.taxii2lib.stix.model.StixCollection;
 import com.seshutechie.taxii2lib.stix.model.StixDiscovery;
+import com.seshutechie.taxii2lib.stix.model.StixObjectResult;
 import com.seshutechie.taxii2lib.util.JsonUtil;
 
 import java.util.List;
@@ -14,7 +15,16 @@ public class SomeDirtyTest {
 //        testHttpDiscovery();
 //        testTaxiiDiscovery();
 //        testGetCollections();
-        testCollectionDetails();
+//        testCollectionDetails();
+        testObjects();
+    }
+
+    private static void testObjects() throws TaxiiAppException {
+        TaxiiLib taxiiLib = new TaxiiLib();
+        taxiiLib.setBasicAuthorization("guest", "guest");
+        StixObjectResult objects = taxiiLib.getObjectsAsObjects("https://cti-taxii.mitre.org/stix/", "2f669986-b40b-4423-b720-4396ca6a462b");
+        String json = JsonUtil.objectToJson(objects);
+        System.out.println(JsonUtil.prettyJson(json));
     }
 
     private static void testCollectionDetails() throws TaxiiAppException {
