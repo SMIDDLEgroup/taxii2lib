@@ -7,24 +7,25 @@ import com.seshutechie.taxii2lib.util.CommonUtil;
 import com.seshutechie.taxii2lib.util.ContextUtil;
 import com.seshutechie.taxii2lib.util.JsonUtil;
 
-public class NextObjectsCommand extends Command {
-    public static final String NAME = "next-objects";
+public class ObjectCommand extends Command {
+    public static final String NAME = "object";
     private final TaxiiContext context = TaxiiContext.getContext();
 
-    public NextObjectsCommand() {
+    public ObjectCommand() {
         super(null);
     }
 
-    public NextObjectsCommand(ParsedCommand parsedCommand) {
+    public ObjectCommand(ParsedCommand parsedCommand) {
         super(parsedCommand);
     }
 
     @Override
     public void execute() throws TaxiiAppException {
-        if(parsedCommand.getArgumentCount() == 0) {
-            int pageSize = ContextUtil.getIntValue(parsedCommand, EnvVariable.PAGE_SIZE.name, -1);
-            String objects = context.getTaxiiLib().getNextObjects(pageSize);
-            System.out.println(JsonUtil.prettyJson(objects));
+        if(parsedCommand.getArgumentCount() == 1) {
+            String apiRoot = ContextUtil.getParamValue(parsedCommand, EnvVariable.API_ROOT.name);
+            String connectionId = ContextUtil.getParamValue(parsedCommand, EnvVariable.COLLECTION_ID.name);
+            String object = context.getTaxiiLib().getObjectById(apiRoot, connectionId, parsedCommand.getArgument(0));
+            System.out.println(JsonUtil.prettyJson(object));
             String status = CommonUtil.getLastPageStatus(context.getTaxiiLib().getLastPage());
             if(status != null) {
                 System.out.println(status);
@@ -37,6 +38,6 @@ public class NextObjectsCommand extends Command {
 
     @Override
     public String getUsage() {
-        return "next-objects [--page-size <size>]";
+        return "object [--api-root <api-root-url>] [--collection-id <collection-id>] <object-id>";
     }
 }

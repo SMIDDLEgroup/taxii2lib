@@ -2,7 +2,7 @@ package com.seshutechie.taxii2lib.stix.model;
 
 import java.util.List;
 
-public class StixCollectionResp {
+public class StixCollectionResult {
     List<StixCollection> collections;
 
     public List<StixCollection> getCollections() {

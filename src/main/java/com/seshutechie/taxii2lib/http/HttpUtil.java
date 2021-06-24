@@ -33,7 +33,7 @@ public class HttpUtil {
     public static void updateCommonHeaders(HttpGet httpGet, String accept, String user, String password) {
         httpGet.setHeader(HttpHeaders.ACCEPT, accept);
         httpGet.setHeader(HttpHeaders.AUTHORIZATION, getAuthorizationString(user, password));
-        httpGet.setHeader(StixConstants.HTTP_HEADER_VERSION, StixConstants.SITX_VERSION);
+        httpGet.setHeader(StixConstants.HTTP_HEADER_VERSION, StixConstants.STIX_VERSION);
     }
 
     public static void updateRangeHeaders(HttpGet httpGet, int from, int to) {
@@ -67,6 +67,31 @@ public class HttpUtil {
             throws TaxiiAppException {
         HttpGet httpGet = new HttpGet(apiRoot + StixConstants.SUFFIX_COLLECTIONS + URL_SEPARATOR + collectionId +
                 StixConstants.SUFFIX_OBJECTS );
+        updateCommonHeaders(httpGet, StixConstants.HTTP_ACCEPT_STIX, user, password);
+        if(itemRange != null) {
+            updateRangeHeaders(httpGet, itemRange.getFrom(), itemRange.getTo());
+        }
+        Map<String, String> responseHeaderMap = prepareObjectsResponseHeaderMap();
+        String body = getData(httpGet, responseHeaderMap);
+        if(itemRange != null) {
+            String value = responseHeaderMap.get(HttpHeaders.CONTENT_RANGE);
+            updateItemRange(itemRange, value);
+        }
+        return body;
+    }
+
+    public static String getObject(String apiRoot, String collectionId, String objectId, String user, String password)
+            throws TaxiiAppException {
+        HttpGet httpGet = new HttpGet(apiRoot + StixConstants.SUFFIX_COLLECTIONS + URL_SEPARATOR + collectionId +
+                StixConstants.SUFFIX_OBJECTS  + URL_SEPARATOR + objectId);
+        updateCommonHeaders(httpGet, StixConstants.HTTP_ACCEPT_STIX, user, password);
+        return getData(httpGet);
+    }
+
+    public static String getManifest(String apiRoot, String collectionId, String user, String password, ItemRange itemRange)
+            throws TaxiiAppException {
+        HttpGet httpGet = new HttpGet(apiRoot + StixConstants.SUFFIX_COLLECTIONS + URL_SEPARATOR + collectionId +
+                StixConstants.SUFFIX_MANIFEST );
         updateCommonHeaders(httpGet, StixConstants.HTTP_ACCEPT_STIX, user, password);
         if(itemRange != null) {
             updateRangeHeaders(httpGet, itemRange.getFrom(), itemRange.getTo());

@@ -7,15 +7,15 @@ import com.seshutechie.taxii2lib.util.CommonUtil;
 import com.seshutechie.taxii2lib.util.ContextUtil;
 import com.seshutechie.taxii2lib.util.JsonUtil;
 
-public class NextObjectsCommand extends Command {
-    public static final String NAME = "next-objects";
+public class NextManifestCommand extends Command {
+    public static final String NAME = "next-manifest";
     private final TaxiiContext context = TaxiiContext.getContext();
 
-    public NextObjectsCommand() {
+    public NextManifestCommand() {
         super(null);
     }
 
-    public NextObjectsCommand(ParsedCommand parsedCommand) {
+    public NextManifestCommand(ParsedCommand parsedCommand) {
         super(parsedCommand);
     }
 
@@ -23,8 +23,8 @@ public class NextObjectsCommand extends Command {
     public void execute() throws TaxiiAppException {
         if(parsedCommand.getArgumentCount() == 0) {
             int pageSize = ContextUtil.getIntValue(parsedCommand, EnvVariable.PAGE_SIZE.name, -1);
-            String objects = context.getTaxiiLib().getNextObjects(pageSize);
-            System.out.println(JsonUtil.prettyJson(objects));
+            String manifest = context.getTaxiiLib().getNextManifest(pageSize);
+            System.out.println(JsonUtil.prettyJson(manifest));
             String status = CommonUtil.getLastPageStatus(context.getTaxiiLib().getLastPage());
             if(status != null) {
                 System.out.println(status);

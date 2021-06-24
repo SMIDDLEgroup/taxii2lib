@@ -47,9 +47,9 @@ public class TaxiiLib {
      * @return STIX discovery details
      * @throws TaxiiAppException error condition is raised as TaxiiAppException
      */
-    public StixDiscovery getDiscoveryObject(String discoveryRoot) throws TaxiiAppException {
+    public StixDiscovery getDiscoveryAsObject(String discoveryRoot) throws TaxiiAppException {
         String discovery = getDiscovery(discoveryRoot);
-        return (StixDiscovery) JsonUtil.jsonToObject(discovery, StixDiscovery.class);
+        return JsonUtil.jsonToObject(discovery, StixDiscovery.class);
     }
 
     /**
@@ -72,10 +72,10 @@ public class TaxiiLib {
      * @return a list of collection objects
      * @throws TaxiiAppException error condition is raised as TaxiiAppException
      */
-    public List<StixCollection> getCollectionsObject(String apiRoot) throws TaxiiAppException {
+    public List<StixCollection> getCollectionsAsObject(String apiRoot) throws TaxiiAppException {
         String collections = getCollections(apiRoot);
-        StixCollectionResp collectionResp = (StixCollectionResp) JsonUtil.jsonToObject(collections, StixCollectionResp.class);
-        return collectionResp.getCollections();
+        StixCollectionResult collectionResult = JsonUtil.jsonToObject(collections, StixCollectionResult.class);
+        return collectionResult.getCollections();
     }
 
     /**
@@ -98,13 +98,13 @@ public class TaxiiLib {
      * @return a raw string of collection details
      * @throws TaxiiAppException error condition is raised as TaxiiAppException
      */
-    public StixCollection getCollectionDetailsObject(String apiRoot, String collectionId) throws TaxiiAppException {
+    public StixCollection getCollectionDetailsAsObject(String apiRoot, String collectionId) throws TaxiiAppException {
         String collection = HttpUtil.getCollectionDetails(apiRoot, collectionId, user, password);
-        return (StixCollection) JsonUtil.jsonToObject(collection, StixCollection.class);
+        return JsonUtil.jsonToObject(collection, StixCollection.class);
     }
 
     /**
-     * Get the STIX objects from a given API root, and return as a raw string.
+     * Get the STIX objects using API root and connection id. It return as a raw string.
      * It always get the first page of the objects list.
      *
      * @param apiRoot API Root URL to get collections list (ex: https://cti-taxii.mitre.org/stix/)
@@ -117,7 +117,7 @@ public class TaxiiLib {
     }
 
     /**
-     * Get the STIX objects from a given API root, and return as a raw string.
+     * Get the STIX objects using API root and connection id. It return as a raw string.
      * It always get the first page of the objects list.
      *
      * @param apiRoot API Root URL to get collections list (ex: https://cti-taxii.mitre.org/stix/)
@@ -141,7 +141,7 @@ public class TaxiiLib {
     }
 
     /**
-     * Get the STIX objects from a given API root, and return as a raw string.
+     * Get the STIX objects using API root and connection id. It return as a raw string.
      * It always get the first page of the objects list.
      *
      * @param apiRoot API Root URL to get collections list (ex: https://cti-taxii.mitre.org/stix/)
@@ -150,8 +150,8 @@ public class TaxiiLib {
      * @throws TaxiiAppException error condition is raised as TaxiiAppException
      */
     public StixObjectResult getObjectsAsObjects(String apiRoot, String collectionId) throws TaxiiAppException {
-        String collection = getObjects(apiRoot, collectionId);
-        return (StixObjectResult) JsonUtil.jsonToObject(collection, StixObjectResult.class);
+        String objects = getObjects(apiRoot, collectionId);
+        return JsonUtil.jsonToObject(objects, StixObjectResult.class);
     }
 
     /**
@@ -167,7 +167,7 @@ public class TaxiiLib {
         if(lastPage != null) {
             if(lastPage.getTo() < lastPage.getTotal()) {
                 int size = pageSize < 0 ? this.pageSize : pageSize;
-                int to = lastPage.getTo() + size - 1;
+                int to = lastPage.getTo() + size;
                 if (to >= lastPage.getTotal()) {
                     to = lastPage.getTotal() - 1;
                 }
@@ -176,7 +176,7 @@ public class TaxiiLib {
                 this.lastPage = itemRange;
             }
         } else {
-            throw new TaxiiAppException("No previous call found for getObjects. You might");
+            throw new TaxiiAppException("No previous page found. You might need to call getObjects first.");
         }
         return objects;
     }
@@ -201,8 +201,129 @@ public class TaxiiLib {
      * @throws TaxiiAppException error condition is raised as TaxiiAppException
      */
     public StixObjectResult getNextObjectsAsObject() throws TaxiiAppException {
-        String collection = getNextObjects();
-        return (StixObjectResult) JsonUtil.jsonToObject(collection, StixObjectResult.class);
+        String objects = getNextObjects();
+        return JsonUtil.jsonToObject(objects, StixObjectResult.class);
+    }
+
+    /**
+     * Get the STIX object details using given API root, connection id and object id, and return as a raw string.
+     *
+     * @param apiRoot API Root URL to get collections list (ex: https://cti-taxii.mitre.org/stix/)
+     * @param collectionId collection id
+     * @param objectId object id
+     * @return a raw json string of STIX objects
+     * @throws TaxiiAppException error condition is raised as TaxiiAppException
+     */
+    public String getObjectById(String apiRoot, String collectionId, String objectId) throws TaxiiAppException {
+        return HttpUtil.getObject(apiRoot, collectionId, objectId, user, password);
+    }
+
+    /**
+     * Get the STIX object details using given API root, connection id and object id, and return as a raw string.
+     *
+     * @param apiRoot API Root URL to get collections list (ex: https://cti-taxii.mitre.org/stix/)
+     * @param collectionId collection id
+     * @param objectId object id
+     * @return a raw json string of STIX objects
+     * @throws TaxiiAppException error condition is raised as TaxiiAppException
+     */
+    public StixObjectResult getObjectByIdAsObject(String apiRoot, String collectionId, String objectId) throws TaxiiAppException {
+        String object = getObjectById(apiRoot, collectionId, objectId);
+        return JsonUtil.jsonToObject(object, StixObjectResult.class);
+    }
+
+    /**
+     * Get the STIX collection manifest using API root and connection id. It return as a raw string.
+     * It always get the first page of the objects list.
+     *
+     * @param apiRoot API Root URL to get collections list (ex: https://cti-taxii.mitre.org/stix/)
+     * @param collectionId collection id
+     * @param from starting index of the object. Whole list starts from 0 index.
+     *             If from is -1 then it does not use range to fetch it is same as getObjects method with out from and pageSize.
+     * @param pageSize number of objects to fetch. if pageSize is -1 then page size is picked from prior call of setPageSize or default size.
+     * @return a raw json string of collection manifest
+     * @throws TaxiiAppException error condition is raised as TaxiiAppException
+     */
+    public String getManifest(String apiRoot, String collectionId, int from, int pageSize) throws TaxiiAppException {
+        this.apiRoot = apiRoot;
+        this.collectionId = collectionId;
+        this.lastPage = null;
+        int size = pageSize < 0 ? this.pageSize : pageSize;
+        int to = (from >= 0) ? from + size - 1 : -1;
+        ItemRange itemRange = new ItemRange(from, to);
+        String manifest = HttpUtil.getManifest(apiRoot, collectionId, user, password, itemRange);
+        this.lastPage = itemRange;
+        return manifest;
+    }
+
+    /**
+     * Get the STIX collection manifest using API root and connection id. It return as an object.
+     * It always get the first page of the objects list.
+     *
+     * @param apiRoot API Root URL to get collections list (ex: https://cti-taxii.mitre.org/stix/)
+     * @param collectionId collection id
+     * @param from starting index of the object. Whole list starts from 0 index.
+     *             If from is -1 then it does not use range to fetch it is same as getObjects method with out from and pageSize.
+     * @param pageSize number of objects to fetch. if pageSize is -1 then page size is picked from prior call of setPageSize or default size.
+     * @return StixManifestResult object
+     * @throws TaxiiAppException error condition is raised as TaxiiAppException
+     */
+    public StixManifestResult getManifestAsObject(String apiRoot, String collectionId, int from, int pageSize) throws TaxiiAppException {
+        String manifest = getManifest(apiRoot, collectionId, from, pageSize);
+        return JsonUtil.jsonToObject(manifest, StixManifestResult.class);
+    }
+
+    /**
+     * Gets next page of manifest, if available.
+     * It should be called only after initial {@link #getManifest(String, String, int, int) getManifest}/{@link #getManifestAsObject(String, String, int, int) getManifestAsObject}
+     * method been called or {@link #getNextManifest(int) getNextManifest}/{@link } been called.
+     *
+     * @param pageSize number of required objects. If this is zero then it uses earlier set pageSize or default size.
+     * @return a raw json string of STIX manifest
+     * @throws TaxiiAppException error condition is raised as TaxiiAppException
+     */
+    public String getNextManifest(int pageSize) throws TaxiiAppException {
+        String objects = null;
+        if(lastPage != null) {
+            if(lastPage.getTo() < lastPage.getTotal() - 1) {
+                int size = pageSize < 0 ? this.pageSize : pageSize;
+                int to = lastPage.getTo() + size;
+                if (to >= lastPage.getTotal()) {
+                    to = lastPage.getTotal() - 1;
+                }
+                ItemRange itemRange = new ItemRange(lastPage.getTo() + 1, to);
+                objects = HttpUtil.getManifest(apiRoot, collectionId, user, password, itemRange);
+                this.lastPage = itemRange;
+            }
+        } else {
+            throw new TaxiiAppException("No previous page details found. You might need to call getManifest before this");
+        }
+        return objects;
+    }
+
+    /**
+     * Gets next page of manifest, if available.
+     * It should be called only after initial {@link #getManifest(String, String, int, int) getManifest}/{@link #getManifestAsObject(String, String, int, int) getManifestAsObject}
+     * method been called or {@link #getNextManifest(int) getNextManifest}/{@link #getNextManifestAsObject() getNextManifestAsObject} been called.
+     *
+     * @return a raw json string of STIX manifest
+     * @throws TaxiiAppException error condition is raised as TaxiiAppException
+     */
+    public String getNextManifest() throws TaxiiAppException {
+        return getNextManifest(-1);
+    }
+
+    /**
+     * Gets next page of manifest, if available.
+     * It should be called only after initial {@link #getManifest(String, String, int, int) getManifest}/{@link #getManifestAsObject(String, String, int, int) getManifestAsObject}
+     * method been called or {@link #getNextManifest(int) getNextManifest}/{@link #getNextManifestAsObject() getNextManifestAsObject} been called.
+     *
+     * @return StixManifestResult object
+     * @throws TaxiiAppException error condition is raised as TaxiiAppException
+     */
+    public StixManifestResult getNextManifestAsObject() throws TaxiiAppException {
+        String manifest = getNextManifest();
+        return JsonUtil.jsonToObject(manifest, StixManifestResult.class);
     }
 
     /**

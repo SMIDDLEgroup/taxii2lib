@@ -10,8 +10,8 @@ public class DiscoveryCommand extends Command {
     public static final String NAME = "discovery";
     private final TaxiiContext context = TaxiiContext.getContext();
 
-    public DiscoveryCommand(ParsedCommand parsedCommand) {
-        super(parsedCommand);
+    public DiscoveryCommand() {
+        super(null);
     }
 
     @Override

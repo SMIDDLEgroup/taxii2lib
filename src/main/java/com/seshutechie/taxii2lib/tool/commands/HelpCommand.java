@@ -6,8 +6,8 @@ public class HelpCommand extends Command {
     public static final String NAME = "help";
     private final Map<String, Command> commandMap;
 
-    public HelpCommand(ParsedCommand parsedCommand, Map<String, Command> commandMap) {
-        super(parsedCommand);
+    public HelpCommand(Map<String, Command> commandMap) {
+        super(null);
         this.commandMap = commandMap;
     }
 

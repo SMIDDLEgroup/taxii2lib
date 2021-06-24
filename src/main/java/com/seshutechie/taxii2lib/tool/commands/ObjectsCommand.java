@@ -26,8 +26,8 @@ public class ObjectsCommand extends Command {
             String connectionId = ContextUtil.getParamValue(parsedCommand, EnvVariable.COLLECTION_ID.name);
             int from = ContextUtil.getIntValue(parsedCommand, EnvVariable.FROM.name, -1);
             int pageSize = ContextUtil.getIntValue(parsedCommand, EnvVariable.PAGE_SIZE.name, -1);
-            String collectionDetails = context.getTaxiiLib().getObjects(apiRoot, connectionId, from, pageSize);
-            System.out.println(JsonUtil.prettyJson(collectionDetails));
+            String objects = context.getTaxiiLib().getObjects(apiRoot, connectionId, from, pageSize);
+            System.out.println(JsonUtil.prettyJson(objects));
             String status = CommonUtil.getLastPageStatus(context.getTaxiiLib().getLastPage());
             if(status != null) {
                 System.out.println(status);

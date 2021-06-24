@@ -11,8 +11,8 @@ public class SetCommand extends Command {
 
     private final TaxiiContext context = TaxiiContext.getContext();
 
-    public SetCommand(ParsedCommand parsedCommand) {
-        super(parsedCommand);
+    public SetCommand() {
+        super(null);
     }
 
     @Override

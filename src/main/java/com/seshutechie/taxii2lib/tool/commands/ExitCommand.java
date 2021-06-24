@@ -5,8 +5,8 @@ import com.seshutechie.taxii2lib.TaxiiAppException;
 public class ExitCommand extends Command {
     public static final String NAME = "exit";
 
-    public ExitCommand(ParsedCommand parsedCommand) {
-        super(parsedCommand);
+    public ExitCommand() {
+        super(null);
     }
 
     @Override

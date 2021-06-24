@@ -4,8 +4,8 @@ import com.seshutechie.taxii2lib.TaxiiAppException;
 
 public class UnknownCommand extends Command {
 
-    public UnknownCommand(ParsedCommand parsedCommand) {
-        super(parsedCommand);
+    public UnknownCommand() {
+        super(null);
     }
 
     @Override

@@ -14,8 +14,8 @@ public class JsonUtil {
         return prettyGson.toJson(json);
     }
 
-    public static Object jsonToObject(String jsonString, Class objType) {
-        return gson.fromJson(jsonString, objType);
+    public static <T> T jsonToObject(String jsonString, Class<T> type) {
+        return gson.fromJson(jsonString, type);
     }
 
     public static String objectToJson(Object object) {
