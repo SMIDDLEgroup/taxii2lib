@@ -5,7 +5,7 @@ This project gives an access point to use STIX data. This provides a command lin
 Any _user_, like an analyst, can directly use the tool to browse through security data.
 A _developer_ who wants to integrate STIX data into their application can use this as library _jar_.
 
-###STIX Standards
+### STIX Standards
 
 > Structured Threat Information Expression (STIX™) is a language and serialization format used to exchange cyber threat intelligence (CTI). STIX is open source and free allowing those interested to contribute and ask questions freely.
 
