@@ -37,6 +37,6 @@ public class NextManifestCommand extends Command {
 
     @Override
     public String getUsage() {
-        return "next-objects [--page-size <size>]";
+        return "next-manifest [--page-size <size>]";
     }
 }

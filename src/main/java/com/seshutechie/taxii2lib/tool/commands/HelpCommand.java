@@ -1,6 +1,7 @@
 package com.seshutechie.taxii2lib.tool.commands;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class HelpCommand extends Command {
     public static final String NAME = "help";
@@ -14,9 +15,9 @@ public class HelpCommand extends Command {
     @Override
     public void execute() {
         if (parsedCommand.getArgumentCount() == 0) {
-            for(String name: commandMap.keySet()) {
+            commandMap.keySet().stream().sorted().forEach(name -> {
                 System.out.printf("%s\n", commandMap.get(name).getUsage());
-            }
+            });
         } else if (parsedCommand.getArgumentCount() == 1) {
             Command command = commandMap.get(parsedCommand.getArgument(0));
             if(command != null) {
