@@ -4,7 +4,7 @@
 
     <groupId>com.seshutechie.taxii2lib</groupId>
     <artifactId>seshut-taxii2lib</artifactId>
-    <version>0.1</version>
+    <version>0.2</version>
     <name>taxii2-client-lib</name>
     <description>Project for TAXII 2.0 client lib/tool</description>
 

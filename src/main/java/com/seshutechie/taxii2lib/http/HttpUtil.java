@@ -8,13 +8,17 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +41,7 @@ public class HttpUtil {
     }
 
     public static void updateRangeHeaders(HttpGet httpGet, int from, int to) {
-        if(from >= 0 && to >= from) {
+        if (from >= 0 && to >= from) {
             httpGet.setHeader(HttpHeaders.RANGE, getRangeString(from, to));
         }
     }
@@ -63,27 +67,40 @@ public class HttpUtil {
         return getData(httpGet);
     }
 
-    public static String getObjects(String apiRoot, String collectionId, String user, String password, ItemRange itemRange)
-            throws TaxiiAppException {
-        HttpGet httpGet = new HttpGet(apiRoot + StixConstants.SUFFIX_COLLECTIONS + URL_SEPARATOR + collectionId +
-                StixConstants.SUFFIX_OBJECTS );
+    public static String getObjects(String apiRoot, String collectionId, Map<String, String> params,
+                                    String user, String password, ItemRange itemRange) throws TaxiiAppException {
+        HttpGet httpGet = new HttpGet(getObjectsUrl(apiRoot, collectionId, params));
         updateCommonHeaders(httpGet, StixConstants.HTTP_ACCEPT_STIX, user, password);
-        if(itemRange != null) {
+        if (itemRange != null) {
             updateRangeHeaders(httpGet, itemRange.getFrom(), itemRange.getTo());
         }
         Map<String, String> responseHeaderMap = prepareObjectsResponseHeaderMap();
         String body = getData(httpGet, responseHeaderMap);
-        if(itemRange != null) {
+        if (itemRange != null) {
             String value = responseHeaderMap.get(HttpHeaders.CONTENT_RANGE);
             updateItemRange(itemRange, value);
         }
         return body;
     }
 
+    private static String getObjectsUrl(String apiRoot, String collectionId, Map<String, String> params) throws TaxiiAppException {
+        try {
+            String url = apiRoot + StixConstants.SUFFIX_COLLECTIONS + URL_SEPARATOR + collectionId + StixConstants.SUFFIX_OBJECTS;
+            URIBuilder builder = new URIBuilder(url);
+            if (!params.isEmpty()) {
+                params.forEach(builder::addParameter);
+                url = builder.build().toString();
+            }
+            return url;
+        } catch (URISyntaxException e) {
+            throw new TaxiiAppException(e);
+        }
+    }
+
     public static String getObject(String apiRoot, String collectionId, String objectId, String user, String password)
             throws TaxiiAppException {
         HttpGet httpGet = new HttpGet(apiRoot + StixConstants.SUFFIX_COLLECTIONS + URL_SEPARATOR + collectionId +
-                StixConstants.SUFFIX_OBJECTS  + URL_SEPARATOR + objectId);
+                StixConstants.SUFFIX_OBJECTS + URL_SEPARATOR + objectId);
         updateCommonHeaders(httpGet, StixConstants.HTTP_ACCEPT_STIX, user, password);
         return getData(httpGet);
     }
@@ -91,14 +108,14 @@ public class HttpUtil {
     public static String getManifest(String apiRoot, String collectionId, String user, String password, ItemRange itemRange)
             throws TaxiiAppException {
         HttpGet httpGet = new HttpGet(apiRoot + StixConstants.SUFFIX_COLLECTIONS + URL_SEPARATOR + collectionId +
-                StixConstants.SUFFIX_MANIFEST );
+                StixConstants.SUFFIX_MANIFEST);
         updateCommonHeaders(httpGet, StixConstants.HTTP_ACCEPT_STIX, user, password);
-        if(itemRange != null) {
+        if (itemRange != null) {
             updateRangeHeaders(httpGet, itemRange.getFrom(), itemRange.getTo());
         }
         Map<String, String> responseHeaderMap = prepareObjectsResponseHeaderMap();
         String body = getData(httpGet, responseHeaderMap);
-        if(itemRange != null) {
+        if (itemRange != null) {
             String value = responseHeaderMap.get(HttpHeaders.CONTENT_RANGE);
             updateItemRange(itemRange, value);
         }
@@ -106,16 +123,16 @@ public class HttpUtil {
     }
 
     private static void updateItemRange(ItemRange itemRange, String value) {
-        if(value != null) {//Ex: items 0-0/11645
+        if (value != null) {//Ex: items 0-0/11645
             String range = value.substring(ITEMS.length()).replace('/', '-');
             String[] values = range.split("-");
-            if(values.length > 0) {
+            if (values.length > 0) {
                 itemRange.setFrom(Integer.parseInt(values[0]));
             }
-            if(values.length > 1) {
+            if (values.length > 1) {
                 itemRange.setTo(Integer.parseInt(values[1]));
             }
-            if(values.length > 2) {
+            if (values.length > 2) {
                 itemRange.setTotal(Integer.parseInt(values[2]));
             }
         }
@@ -135,20 +152,24 @@ public class HttpUtil {
         String result = null;
 
         try {
-            CloseableHttpClient httpclient = HttpClients.createDefault();
+            CloseableHttpClient httpclient = HttpClients.custom()
+                    .setDefaultRequestConfig(RequestConfig.custom()
+                            .setCookieSpec(CookieSpecs.STANDARD)
+                            .build())
+                    .build();
             CloseableHttpResponse response = httpclient.execute(httpGet);
             int statusCode = response.getStatusLine().getStatusCode();
-            if(statusCode >= HttpStatus.SC_MULTIPLE_CHOICES) { //Any error code >= 300
+            if (statusCode >= HttpStatus.SC_MULTIPLE_CHOICES) { //Any error code >= 300
                 throw new TaxiiAppException(response.getStatusLine().toString());
             }
             HttpEntity entity = response.getEntity();
             if (entity != null) {
                 result = EntityUtils.toString(entity);
             }
-            if(responseHeaders != null) {
-                for(String headerName: responseHeaders.keySet()) {
+            if (responseHeaders != null) {
+                for (String headerName : responseHeaders.keySet()) {
                     Header header = response.getFirstHeader(headerName);
-                    if(header != null) {
+                    if (header != null) {
                         responseHeaders.put(headerName, header.getValue());
                     }
                 }
